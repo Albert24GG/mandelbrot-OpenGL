@@ -6,8 +6,11 @@ in vec4 gl_FragCoord;
 uniform vec4 color;
 uniform vec2 windowResolution;
 uniform float time;
-
-const int maxIterations = 1000;
+uniform vec4 coordRange;
+uniform vec2 off;
+uniform float zoom;
+ 
+const int maxIterations = 5000;
 
 precision highp float;
 
@@ -36,7 +39,7 @@ float iterateMandelbrot(vec2 coords){
 	return 0.0;
 }
 
-
+/*
 //vec4 coordinateRange represents (Xmin,Xmax,Ymin,Ymax) we want from our window
 vec2 getCoordinatesFromScreen(vec2 fragCoords, vec2 windowResolution, vec4 coordinateRange){
 	vec2 normalizedCoordinates = fragCoords.xy / windowResolution; // relative position of the fragment, from 0 to 1
@@ -50,17 +53,40 @@ vec2 getCoordinatesFromScreen(vec2 fragCoords, vec2 windowResolution, vec4 coord
 
 	return normalizedCoordinates;
 }
+*/
 
+vec2 fragNormalizeCoords(vec2 fragCoords, vec2 initialAxisLen){
+	return vec2(
+		 ((fragCoords.x - windowResolution.x / 2) / windowResolution.x) * (initialAxisLen.x / zoom) - off.x,
+		 ((fragCoords.y - windowResolution.y / 2) / windowResolution.y) * (initialAxisLen.y / zoom) - off.y
+	);
+}
 
 void main(){
 	float aspectRatio = windowResolution.x / windowResolution.y;
+	//aspectRatio = (abs(coordRange.x) + abs(coordRange.y) ) / aspectRatio;
+	float yAspectRatio = abs(coordRange.w / coordRange.z);
+	float ymin = aspectRatio / (1.0 + yAspectRatio);
+	float ymax = ymin / yAspectRatio;
+	ymin = coordRange.z < 0 ? -ymin : ymin;
+	ymax = coordRange.w < 0 ? -ymax : ymax;
+	
+	/*
 	vec2 fragNormalizedCoords = getCoordinatesFromScreen(
 		//FragCoords,
 		gl_FragCoord.xy,
 		windowResolution,
-		vec4(-2.0 * aspectRatio, 2.0 * aspectRatio, -2.1, 2.1)
+		coordRange
+		//vec4(coordRange.xy, vec2(ymin, ymax))
+		//coordRange * vec4(vec2(aspectRatio), vec2(1.0))
+		//vec4(-2.0 * aspectRatio, 1.0 * aspectRatio, -2.1, 4.1)
 	);
+	*/
+
+	vec2 fragNormalizedCoords = fragNormalizeCoords(gl_FragCoord.xy, vec2(4, 4));
 
 	float shade = iterateMandelbrot(fragNormalizedCoords) * 0.25;
 	FragColor = vec4(shade);
+	//if(fragNormalizedCoords.x < 0 && fragNormalizedCoords.y < 0)
+	//	FragColor = vec4(0.0, 1.0, 0.0, 1.0);
 }

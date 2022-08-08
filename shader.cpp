@@ -103,7 +103,7 @@ GLuint Shader::getID() {
 	return *this->ID;
 }
 
-void Shader::bindValues(const GLuint& width, const GLuint& height, const GLfloat& time) {
+void Shader::bindValues(const GLuint& width, const GLuint& height, const GLfloat& time, const double& x, const double& y, const double& zoom) {
 	// Ensure that the correct shader program is in use
 	
 	this->use();
@@ -112,6 +112,10 @@ void Shader::bindValues(const GLuint& width, const GLuint& height, const GLfloat
 	GLint windowResolutionLocation = glGetUniformLocation(*this->ID, "windowResolution");
 	GLint timeLocation = glGetUniformLocation(*this->ID, "time");
 
-	glUniform2f(windowResolutionLocation,(float) width, (float)height);
+	glUniform2f(windowResolutionLocation, (float) width, (float)height);
 	glUniform1f(timeLocation, time);
+
+	glUniform2f(glGetUniformLocation(*this->ID, "off"), x, y);
+	glUniform1f(glGetUniformLocation(*this->ID, "zoom"), zoom);
+	//glUniform4f(glGetUniformLocation(*this->ID, "coordRange"), xMin, xMax, yMin, yMax);
 }

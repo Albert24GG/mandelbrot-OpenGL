@@ -36,7 +36,7 @@ public:
 
 	// Bind all the CPU values to the GPU values
 
-	void bindValues(const GLuint& width, const GLuint& height, const GLfloat& time);
+	void bindValues(const GLuint& width, const GLuint& height, const GLfloat& time, const double& x, const double& y, const double& zoom);
 
 	// Activate the shader program;
 	
