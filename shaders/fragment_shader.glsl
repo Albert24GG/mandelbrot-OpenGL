@@ -57,33 +57,15 @@ vec2 getCoordinatesFromScreen(vec2 fragCoords, vec2 windowResolution, vec4 coord
 
 vec2 fragNormalizeCoords(vec2 fragCoords, vec2 initialAxisLen){
 	return vec2(
-		 ((fragCoords.x - windowResolution.x / 2) / windowResolution.x) * (initialAxisLen.x / zoom) - off.x,
-		 ((fragCoords.y - windowResolution.y / 2) / windowResolution.y) * (initialAxisLen.y / zoom) - off.y
+		 (fragCoords.x / windowResolution.x - 0.5) * (initialAxisLen.x / zoom) + off.x,
+		 (fragCoords.y / windowResolution.y - 0.5) * (initialAxisLen.y / zoom) + off.y
 	);
 }
 
 void main(){
 	float aspectRatio = windowResolution.x / windowResolution.y;
-	//aspectRatio = (abs(coordRange.x) + abs(coordRange.y) ) / aspectRatio;
-	float yAspectRatio = abs(coordRange.w / coordRange.z);
-	float ymin = aspectRatio / (1.0 + yAspectRatio);
-	float ymax = ymin / yAspectRatio;
-	ymin = coordRange.z < 0 ? -ymin : ymin;
-	ymax = coordRange.w < 0 ? -ymax : ymax;
 	
-	/*
-	vec2 fragNormalizedCoords = getCoordinatesFromScreen(
-		//FragCoords,
-		gl_FragCoord.xy,
-		windowResolution,
-		coordRange
-		//vec4(coordRange.xy, vec2(ymin, ymax))
-		//coordRange * vec4(vec2(aspectRatio), vec2(1.0))
-		//vec4(-2.0 * aspectRatio, 1.0 * aspectRatio, -2.1, 4.1)
-	);
-	*/
-
-	vec2 fragNormalizedCoords = fragNormalizeCoords(gl_FragCoord.xy, vec2(4, 4));
+	vec2 fragNormalizedCoords = fragNormalizeCoords(gl_FragCoord.xy, vec2(4 * aspectRatio, 4));
 
 	float shade = iterateMandelbrot(fragNormalizedCoords) * 0.25;
 	FragColor = vec4(shade);

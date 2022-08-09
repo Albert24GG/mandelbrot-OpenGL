@@ -11,11 +11,10 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow* window);
-void setScreenColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-void setColor(const GLuint &shaderProgram);
 void changeCoordRange(GLFWwindow* window, bool mode);
 void normalizeCoord(double& x, double& y);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // Set default WIDTH and HEIGHT values
 constexpr GLint WIDTH = 800, HEIGHT = 600;
@@ -26,7 +25,7 @@ const char* FRAGMENT_SHADER_PATH = "./shaders/fragment_shader.glsl";
 
 struct coord {
 	double x, y;
-} off{0,0};
+} off{0.0, 0.0};
 
 double zoom = 1.0;
 int currentWidth, currentHeight;
@@ -53,7 +52,7 @@ int main(int argc, char** argv) {
 
     // Create a window
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGl", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Mandelbrot zoom", nullptr, nullptr);
 
 	// Set window aspect ratio
 
@@ -77,6 +76,14 @@ int main(int argc, char** argv) {
 	// Register the action of zooming
 	
 	glfwSetScrollCallback(window, scroll_callback);
+
+	// Process every key pressed
+
+	glfwSetKeyCallback(window, key_callback);
+
+	// Process mouse clicks for moving the image
+
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -145,11 +152,6 @@ int main(int argc, char** argv) {
 	// Render loop. Keep the window up until it is closed
 
 	while (!glfwWindowShouldClose(window)) {
-		
-		setScreenColor(39.0f / 255.0f, 138.0f / 255.0f, 245.0f / 255.0f, 0.8f);
-
-		// process the input
-		processInput(window);
 
 		// Draw the shape
 
@@ -168,11 +170,8 @@ int main(int argc, char** argv) {
 		normalizeCoord(xpos, ypos);
 		//std::cout << xpos << ' ' << ypos << '\n';
 
-		// Set the color for a shader
-		setColor(shaderProgram.getID());
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLuint), GL_UNSIGNED_INT, (GLvoid*) 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -194,25 +193,76 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos){}
 
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	
+	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+		// Move by 1% in all directions
+		double lenx = (4.0 * currentWidth / currentHeight) / zoom;
+		int signx = -1 * (key == GLFW_KEY_A || key == GLFW_KEY_LEFT) + (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT); // key A / LEFT ARROW pressed -> signx = -1 (moving right);  key D / RIGHT ARROW pressed -> signx = 1; (moving left)
+		
+		double leny = 4 / zoom;
+		int signy = -1 * (key == GLFW_KEY_S || key == GLFW_KEY_DOWN) + (key == GLFW_KEY_W || key == GLFW_KEY_UP); // key W / UP ARROW pressed -> signy = -1 (moving up);  key S / DOWN ARROW pressed -> signy = 1; (moving down)
 
+		switch (key) {	
+			case GLFW_KEY_A:
+			case GLFW_KEY_LEFT:
+			case GLFW_KEY_D:
+			case GLFW_KEY_RIGHT:
+				off.x += signx * 0.01 * lenx;
+				break;
 
-void processInput(GLFWwindow* window) {
-	// Listen for Esc and close window when key pressed
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
+			case GLFW_KEY_S:
+			case GLFW_KEY_DOWN:
+			case GLFW_KEY_W:
+			case GLFW_KEY_UP:
+				off.y += signy * 0.01 * leny;
+				break;
+			
+			case GLFW_KEY_I:
+				zoom *= 1.1;
+				break;
+
+			case GLFW_KEY_O:
+				// Prevent zooming out too far
+				zoom = std::max(zoom * 0.9, 0.5);
+				break;
+
+			// Listen for Esc and close window when key pressed
+			case GLFW_KEY_ESCAPE:
+				glfwSetWindowShouldClose(window, true);
+				break;
+		}
 	}
-}
-
-
-void setScreenColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-	glClearColor(red, green, blue, alpha);
-	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	if (yoffset != 0.0f)
 		changeCoordRange(window, (bool)(yoffset > 0)); // yoffset > 0 -> zoom in; yoffset < 0 -> zoom out
+}
+
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	/*
+	if (button == GLFW_MOUSE_BUTTON_LEFT && (action == GLFW_PRESS )) {
+		double xPressPos, yPressPos;
+		glfwGetCursorPos(window, &xPressPos, &yPressPos);
+		yPressPos = currentHeight - yPressPos;
+		normalizeCoord(xPressPos, yPressPos);
+		while (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_RELEASE) {
+			double xReleasePos, yReleasePos;
+			glfwGetCursorPos(window, &xReleasePos, &yReleasePos);
+			normalizeCoord(xReleasePos, yReleasePos);
+			yReleasePos = currentHeight - yReleasePos;
+
+			off.x -= xReleasePos - xPressPos;
+			off.y -= yReleasePos - yPressPos;
+
+			xPressPos = xReleasePos;
+			yPressPos = yReleasePos;
+		}
+	}
+	*/
 }
 
 
@@ -229,39 +279,26 @@ void changeCoordRange(GLFWwindow* window, bool mode) {
 	double zoomFactor = 0.1;
 
 	// Decide whether is a zoom in or a zoom out; zoom in -> sign = -1,  zoom out -> sign = 1
-	double sign = (mode == 1) * (-1.0f) + (mode == 0);
+	int sign = (mode == 1) * (-1) + (mode == 0);
 	
 	// Find the new coordinates of the screen center in the cartesian system
 	// Scale the entire image and find which are the new coordinates of the screen center, 
 	// then adjust it so that the pixel under the cursor has the same position as before the scaling
-	off.x = off.x * (1 + sign * zoomFactor) + sign * xMousePos * zoomFactor;
-	off.y = off.y * (1 + sign * zoomFactor) + sign * yMousePos * zoomFactor;
-	std::cout << off.x << ' ' << off.y << '\n';
+	off.x = off.x * (1 + sign * zoomFactor) - sign * xMousePos * zoomFactor;
+	off.y = off.y * (1 + sign * zoomFactor) - sign * yMousePos * zoomFactor;
 	zoom *= 1 - sign * zoomFactor;
 
 	// Prevent zooming out too far
 	zoom = std::max(zoom, 0.5);
-
-	std::cout << zoom << '\n';
 }
 
 
 void normalizeCoord(double& x, double& y) {
-	int lenx = 4, leny = 4;
-			//factor between -0.5 and 0.5
-	x = ((x - currentWidth / 2) / currentWidth) * (lenx / zoom) - off.x;
-	y = ((y - currentHeight / 2) / currentHeight) * (leny / zoom) - off.y;
-
-	//x = (x / currentWidth * (xOff.max - xOff.min) + xOff.min) ;
-	//y = y / currentHeight * (yOff.max - yOff.min) + yOff.min;
-}
-
-
-void setColor(const GLuint &shaderProgram) {
-	double timeVal = glfwGetTime();
-	float greenVal = abs(sin(timeVal)/2);
-	GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "color");
-
-	glUseProgram(shaderProgram);
-	glUniform4f(vertexColorLocation, 39.0f / 255.0f, greenVal, 87.0f / 255.0f, 0.8);
+	double leny = 4;
+	double lenx = (1.0 * currentWidth / currentHeight) * leny; // multiply the orizontal length by the aspect ratio to get an image proportional to the screen
+	
+	// Compute a factor between -0.5 and 0.5 to determine the position of the mouse relative to the center of the screen,
+	// then find what the coordinates would be if (0, 0) was the center of the screen and finally add the current coordinates of the screen center
+	x = (x / currentWidth - 0.5) * (lenx / zoom) + off.x;
+	y = (y / currentHeight - 0.5) * (leny / zoom) + off.y;
 }
