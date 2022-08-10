@@ -14,7 +14,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void changeCoordRange(GLFWwindow* window, bool mode);
 void normalizeCoord(double& x, double& y);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // Set default WIDTH and HEIGHT values
 constexpr GLint WIDTH = 800, HEIGHT = 600;
@@ -80,10 +79,6 @@ int main(int argc, char** argv) {
 	// Process every key pressed
 
 	glfwSetKeyCallback(window, key_callback);
-
-	// Process mouse clicks for moving the image
-
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -151,6 +146,9 @@ int main(int argc, char** argv) {
 
 	// Render loop. Keep the window up until it is closed
 
+	bool isPanning = false;
+	double xPrevPos = 0.0, yPrevPos = 0.0;
+
 	while (!glfwWindowShouldClose(window)) {
 
 		// Draw the shape
@@ -158,17 +156,31 @@ int main(int argc, char** argv) {
 		shaderProgram.use();
 
 		// Pass window width and height to the shader
-		int width, height;
 		glfwGetFramebufferSize(window, &currentWidth, &currentHeight);
 		shaderProgram.bindValues(currentWidth, currentHeight, glfwGetTime(), off.x , off.y, zoom);
 		//shaderProgram.bindValues(currentWidth, currentHeight, glfwGetTime(), xOff.min, xOff.max, yOff.min, yOff.max);
 
-
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		ypos = currentHeight - ypos;
-		normalizeCoord(xpos, ypos);
+		// Get current cursor position
+		double xCurrentPos, yCurrentPos;
+		glfwGetCursorPos(window, &xCurrentPos, &yCurrentPos);
+		yCurrentPos = currentHeight - yCurrentPos;
+		normalizeCoord(xCurrentPos, yCurrentPos);
 		//std::cout << xpos << ' ' << ypos << '\n';
+
+		if (isPanning) {
+			// Change the offset position according to the mouse movement
+			off.x -= (xCurrentPos - xPrevPos);
+			off.y -= (yCurrentPos - yPrevPos);
+		}
+		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
+			isPanning = true;
+			
+			// Remember the position of the mouse when starting panning
+			xPrevPos = xCurrentPos;
+			yPrevPos = yCurrentPos;
+		}
+		// If left click is released, stop panning
+		isPanning = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_RELEASE);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLuint), GL_UNSIGNED_INT, (GLvoid*) 0);
@@ -239,30 +251,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	if (yoffset != 0.0f)
 		changeCoordRange(window, (bool)(yoffset > 0)); // yoffset > 0 -> zoom in; yoffset < 0 -> zoom out
-}
-
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	/*
-	if (button == GLFW_MOUSE_BUTTON_LEFT && (action == GLFW_PRESS )) {
-		double xPressPos, yPressPos;
-		glfwGetCursorPos(window, &xPressPos, &yPressPos);
-		yPressPos = currentHeight - yPressPos;
-		normalizeCoord(xPressPos, yPressPos);
-		while (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_RELEASE) {
-			double xReleasePos, yReleasePos;
-			glfwGetCursorPos(window, &xReleasePos, &yReleasePos);
-			normalizeCoord(xReleasePos, yReleasePos);
-			yReleasePos = currentHeight - yReleasePos;
-
-			off.x -= xReleasePos - xPressPos;
-			off.y -= yReleasePos - yPressPos;
-
-			xPressPos = xReleasePos;
-			yPressPos = yReleasePos;
-		}
-	}
-	*/
 }
 
 
