@@ -8,9 +8,9 @@ uniform float time;
 uniform dvec2 off;
 uniform double zoom;
  
-const int maxIterations = 100;
+const int maxIterations = 1000;
 
-// vec2(x, y) are the coordinates -> x + y * i is the complex representation
+
 dvec2 squareImaginary(dvec2 number){
 	
 	return dvec2(
@@ -21,18 +21,20 @@ dvec2 squareImaginary(dvec2 number){
 }
 
 
+// dvec2(x, y) are the coordinates -> x + y * i is the complex representation 
 float iterateMandelbrot(dvec2 coords){
-	dvec2 z = dvec2(0, 0);
-
-	for(int i=1; i<maxIterations; ++i){
-		z = squareImaginary(z) + coords;
-		
-		// Verify the absolute value of z
-		if(length(z) > 2){
-			return float(i) / 10;
-		}
+	dvec2 z1 = dvec2(0);
+	dvec2 z2 = dvec2(0);
+	int iteration = 0;
+	
+	while(z2.x + z2.y <= 4 && iteration < maxIterations){
+		z1.y = 2 * z1.x * z1.y + coords.y;
+		z1.x = z2.x - z2.y + coords.x;
+		z2 = z1 * z1;
+		++iteration;
 	}
-	return 0.0;
+	iteration = int(iteration != maxIterations) * iteration;
+	return float(iteration) / 10;
 }
 
 
@@ -50,6 +52,5 @@ void main(){
 	dvec2 fragNormalizedCoords = fragNormalizeCoords(gl_FragCoord.xy, dvec2(4 * aspectRatio, 4));
 
 	float shade = iterateMandelbrot(fragNormalizedCoords) * 0.25;
-	
 	FragColor = vec4(shade);
 }
