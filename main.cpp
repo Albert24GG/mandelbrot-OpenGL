@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 	
-	// Set OpenGL 3.3 context and core profile
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	// Set OpenGL 4.0 context and core profile
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 	// Only for mac 
@@ -165,7 +165,6 @@ int main(int argc, char** argv) {
 		glfwGetCursorPos(window, &xCurrentPos, &yCurrentPos);
 		yCurrentPos = currentHeight - yCurrentPos;
 		normalizeCoord(xCurrentPos, yCurrentPos);
-		//std::cout << xpos << ' ' << ypos << '\n';
 
 		if (isPanning) {
 			// Change the offset position according to the mouse movement

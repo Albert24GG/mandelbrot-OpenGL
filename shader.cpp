@@ -108,14 +108,9 @@ void Shader::bindValues(const GLuint& width, const GLuint& height, const GLfloat
 	
 	this->use();
 	
-	// Pass window resolution as a 2D vector to the shader
-	GLint windowResolutionLocation = glGetUniformLocation(*this->ID, "windowResolution");
-	GLint timeLocation = glGetUniformLocation(*this->ID, "time");
-
-	glUniform2f(windowResolutionLocation, (float) width, (float)height);
-	glUniform1f(timeLocation, time);
-
-	glUniform2f(glGetUniformLocation(*this->ID, "off"), x, y);
-	glUniform1f(glGetUniformLocation(*this->ID, "zoom"), zoom);
-	//glUniform4f(glGetUniformLocation(*this->ID, "coordRange"), xMin, xMax, yMin, yMax);
+	// Pass window resolution, time, offset and zoom to the shader
+	glUniform2ui(glGetUniformLocation(*this->ID, "windowResolution"), width, height);
+	glUniform1f(glGetUniformLocation(*this->ID, "time"), time);
+	glUniform2d(glGetUniformLocation(*this->ID, "off"), x, y);
+	glUniform1d(glGetUniformLocation(*this->ID, "zoom"), zoom);
 }
