@@ -259,25 +259,26 @@ void changeCoordRange(GLFWwindow* window, bool mode) {
 	glfwGetCursorPos(window, &xMousePos, &yMousePos);
 	yMousePos = currentHeight - yMousePos;
 	normalizeCoord(xMousePos, yMousePos);
-	//std::cout << mode << '\n';
-	//std::cout << xMousePos << ' ' << yMousePos << '\n';
 
 	// Zoom in/out by 10%
-	double zoomFactor = 0.1;
+	double zoomFactor = 1.1;
 
-	// Decide whether is a zoom in or a zoom out; zoom in -> sign = -1,  zoom out -> sign = 1
+	// Decide whether is a zoom in or a zoom out; zoom in -> sign = -1,  zoom out -> sign = +1
 	int sign = (mode == 1) * (-1) + (mode == 0);
 	
+	// When zooming in, all positions multiply by the zoomFactor
+	// When zooming out, all positions divide by the zoomFactor
+	// Ex: be a point on the unzoomed(original) screen whose coordinates are (x, y)
+	// When zooming in by a factor of 2, the same point on the screen will coincide with the point with the coordinates (x/2, y/2) on the original(unzoomed) screen
+	double power = (sign == 1) ? zoomFactor : 1 / zoomFactor;
+
 	// Find the new coordinates of the screen center in the cartesian system
 	// Scale the entire image and find which are the new coordinates of the screen center, 
 	// then adjust it so that the pixel under the cursor has the same position as before the scaling
 	
-	//off.x = off.x / 1.1 + xMousePos * (1 - 1 / 1.1);
-	//off.y = off.y / 1.1 + yMousePos * (1 - 1 / 1.1);
-	off.x = off.x * (1 + sign * zoomFactor) - sign * xMousePos * zoomFactor;
-	off.y = off.y * (1 + sign * zoomFactor) - sign * yMousePos * zoomFactor;
-	//zoom *= 1 - sign * zoomFactor;
-	zoom *= 1.1;
+	off.x = off.x * power + xMousePos * (1 - power);
+	off.y = off.y * power + yMousePos * (1 - power);
+	zoom *= 1 / power;
 
 	// Prevent zooming out too far
 	zoom = std::max(zoom, 0.5);
