@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 	
 	// Set OpenGL 4.0 context and core profile
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 	// Only for mac 
@@ -271,9 +271,13 @@ void changeCoordRange(GLFWwindow* window, bool mode) {
 	// Find the new coordinates of the screen center in the cartesian system
 	// Scale the entire image and find which are the new coordinates of the screen center, 
 	// then adjust it so that the pixel under the cursor has the same position as before the scaling
+	
+	//off.x = off.x / 1.1 + xMousePos * (1 - 1 / 1.1);
+	//off.y = off.y / 1.1 + yMousePos * (1 - 1 / 1.1);
 	off.x = off.x * (1 + sign * zoomFactor) - sign * xMousePos * zoomFactor;
 	off.y = off.y * (1 + sign * zoomFactor) - sign * yMousePos * zoomFactor;
-	zoom *= 1 - sign * zoomFactor;
+	//zoom *= 1 - sign * zoomFactor;
+	zoom *= 1.1;
 
 	// Prevent zooming out too far
 	zoom = std::max(zoom, 0.5);
