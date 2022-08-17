@@ -28,18 +28,22 @@ struct coord {
 
 double zoom = 1.0;
 int currentWidth, currentHeight;
+int maxIterations = 500;
 
 int main(int argc, char** argv) {
+	
 	// -------------------------------- INIT ------------------------------- //
 	
 
 	// Initialize GLFW
+	
 	if (glfwInit() != GL_TRUE) {
 		std::cout << "Failed to initialize GLFW\n";
 		return -1;
 	}
 	
-	// Set OpenGL 4.0 context and core profile
+	// Set OpenGL 4.6 context and core profile
+	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -54,7 +58,6 @@ int main(int argc, char** argv) {
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Mandelbrot zoom", nullptr, nullptr);
 
 	// Set window aspect ratio
-
 	glfwSetWindowAspectRatio(window, WIDTH, HEIGHT);
 
 	if (window == nullptr) {
@@ -62,6 +65,7 @@ int main(int argc, char** argv) {
 		glfwTerminate();
 		return false;
 	}
+
 	glfwMakeContextCurrent(window);
 
 	// Set viewport every time the window is resized
@@ -81,6 +85,7 @@ int main(int argc, char** argv) {
 	glfwSetKeyCallback(window, key_callback);
 
 	// Initialize GLAD
+	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD\n";
 		return -1;
@@ -89,9 +94,12 @@ int main(int argc, char** argv) {
 
 	// -------------------------------- SHADERS ------------------------------- //
 
+
 	Shader shaderProgram(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
 	
+
 	// -------------------------------- VERTEX DATA ------------------------------- //
+
 
 	GLfloat vertices[] = {
 		 -1.0f,  1.0f, 0.0f, // top left
@@ -110,7 +118,6 @@ int main(int argc, char** argv) {
 	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	
 
 	// Generate a Vertex Buffer Object and bind it to the array buffer
 	
@@ -144,10 +151,10 @@ int main(int argc, char** argv) {
 	// -------------------------------- RENDERING ------------------------------- //
 	
 
-	// Render loop. Keep the window up until it is closed
-
 	bool isPanning = false;
 	double xPrevPos = 0.0, yPrevPos = 0.0;
+	
+	// Render loop. Keep the window up until it is closed
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -157,8 +164,7 @@ int main(int argc, char** argv) {
 
 		// Pass window width and height to the shader
 		glfwGetFramebufferSize(window, &currentWidth, &currentHeight);
-		shaderProgram.bindValues(currentWidth, currentHeight, glfwGetTime(), off.x , off.y, zoom);
-		//shaderProgram.bindValues(currentWidth, currentHeight, glfwGetTime(), xOff.min, xOff.max, yOff.min, yOff.max);
+		shaderProgram.bindValues(currentWidth, currentHeight, glfwGetTime(), off.x , off.y, zoom, maxIterations);
 
 		// Get current cursor position
 		double xCurrentPos, yCurrentPos;
@@ -238,6 +244,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				zoom = std::max(zoom * 0.9, 0.5);
 				break;
 
+			// Increase iteration count when '+' key(same as '=' key) pressed
+			case GLFW_KEY_EQUAL:
+				maxIterations = std::min(maxIterations + 10, 2000);
+				break;
+
+			// Decrease iteration count when '-' key pressed
+			case GLFW_KEY_MINUS:
+				maxIterations = std::max(maxIterations - 10, 50);
+				break;
+
 			// Listen for Esc and close window when key pressed
 			case GLFW_KEY_ESCAPE:
 				glfwSetWindowShouldClose(window, true);
@@ -262,15 +278,13 @@ void changeCoordRange(GLFWwindow* window, bool mode) {
 
 	// Zoom in/out by 10%
 	double zoomFactor = 1.1;
-
-	// Decide whether is a zoom in or a zoom out; zoom in -> sign = -1,  zoom out -> sign = +1
-	int sign = (mode == 1) * (-1) + (mode == 0);
 	
 	// When zooming in, all positions multiply by the zoomFactor
 	// When zooming out, all positions divide by the zoomFactor
 	// Ex: be a point on the unzoomed(original) screen whose coordinates are (x, y)
 	// When zooming in by a factor of 2, the same point on the screen will coincide with the point with the coordinates (x/2, y/2) on the original(unzoomed) screen
-	double power = (sign == 1) ? zoomFactor : 1 / zoomFactor;
+	// When zooming out by a factor of 2, the same point on the screen will coincide with the point with the coordinates (2*x, 2*y) on the original(unzoomed) screen
+	double power = (mode == 0) ? zoomFactor : 1 / zoomFactor;
 
 	// Find the new coordinates of the screen center in the cartesian system
 	// Scale the entire image and find which are the new coordinates of the screen center, 

@@ -7,8 +7,7 @@ uniform uvec2 windowResolution;
 uniform float time;
 uniform dvec2 off;
 uniform double zoom;
- 
-const int maxIterations = 2000;
+uniform unsigned int maxIterations;
 
 
 dvec2 squareImaginary(dvec2 number){
@@ -26,7 +25,6 @@ int iterateMandelbrot(dvec2 coords){
 	dvec2 z1 = dvec2(0);
 	dvec2 z2 = dvec2(0);
 	int iteration = 0;
-	
 	while(z2.x + z2.y <= 4 && iteration < maxIterations){
 		z1.y = 2 * z1.x * z1.y + coords.y;
 		z1.x = z2.x - z2.y + coords.x;
