@@ -1,8 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <cerrno>
-#include <stdexcept>
+#include <format>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -171,6 +170,9 @@ int main(int argc, char** argv) {
 		glfwGetCursorPos(window, &xCurrentPos, &yCurrentPos);
 		yCurrentPos = currentHeight - yCurrentPos;
 		normalizeCoord(xCurrentPos, yCurrentPos);
+
+		// Update titlebar information
+		glfwSetWindowTitle(window, std::format("Mandelbrot zoom | Mouse location: x={} y={} | Zoom={} | Iteration count={}", (double)xCurrentPos, (double)yCurrentPos, zoom, maxIterations).c_str());
 
 		if (isPanning) {
 			// Change the offset position according to the mouse movement

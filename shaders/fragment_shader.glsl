@@ -117,7 +117,6 @@ void main(){
 	int iterations = iterateMandelbrot(fragNormalizedCoords);
 	
 	double t = double(iterations) / double(maxIterations);
-	FragColor = vec4(getColor(iterations) / 255, 1.0);
-	//FragColor = map_to_color(float(t));
-
+	//FragColor = vec4(getColor(iterations) / 255, 1.0);
+	FragColor = map_to_color(float(t));
 }
