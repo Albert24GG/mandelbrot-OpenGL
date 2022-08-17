@@ -7,10 +7,11 @@
 #include <sstream>
 #include <string>
 
+
 class Shader {
 private:
 	
-	GLuint* ID = new GLuint;
+	GLuint* ID;
 
 	// Utility funtion that loads the shader source code and creates a shader
 

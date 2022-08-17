@@ -52,6 +52,8 @@ void Shader::loadShader(const char* shaderPath, const GLenum& shaderType, GLuint
 
 
 Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath) {
+	ID = new GLuint;
+
 	// Vertex Shader
 
 	GLuint vertexShader;

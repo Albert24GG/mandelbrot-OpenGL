@@ -79,12 +79,14 @@
     <LibraryPath>D:\VisualStudio-Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\VisualStudio-Libraries\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\VisualStudio-Projects\mandelbrot-OpenGL\include;D:\VisualStudio-Libraries\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\VisualStudio-Libraries\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>D:\VisualStudio-Projects\mandelbrot-OpenGL\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\VisualStudio-Libraries\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\VisualStudio-Projects\mandelbrot-OpenGL\include;D:\VisualStudio-Libraries\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\VisualStudio-Libraries\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>D:\VisualStudio-Projects\mandelbrot-OpenGL\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,14 +153,16 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="shader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="shader.h" />
+    <ClCompile Include="src\helpers.cpp" />
+    <ClCompile Include="src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment_shader.glsl" />
     <None Include="shaders\vertex_shader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\helpers.h" />
+    <ClInclude Include="include\shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
