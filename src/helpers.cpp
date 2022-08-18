@@ -4,7 +4,7 @@
 coord off{ 0.0, 0.0 };
 double zoom = 1.0;
 int currentWidth, currentHeight;
-int maxIterations = 500;
+int maxIterations = 250;
 
 
 void setWindowCallbacks(GLFWwindow* window) {

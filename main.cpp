@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
 
 		// Pass window width and height to the shader
 		glfwGetFramebufferSize(window, &currentWidth, &currentHeight);
-		shaderProgram.bindValues(currentWidth, currentHeight, glfwGetTime(), off.x , off.y, zoom, maxIterations);
+		shaderProgram.bindValues(currentWidth, currentHeight, off.x , off.y, zoom, maxIterations);
 
 		// Get current cursor position
 		double xCurrentPos, yCurrentPos;
