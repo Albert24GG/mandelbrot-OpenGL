@@ -21,6 +21,8 @@ This is a simple opengl program written in C++ that lets the user visualize and 
 3. Changing iteration count:
     * **'+' key to increase iteration count**
     * **'-' key to decrease iteration count**
+4. Exit the program:
+    * **'ESC' key**
 
 ## Samples
 
