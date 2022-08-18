@@ -35,6 +35,9 @@
     <None Include="shaders\vertex_shader.glsl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="README.md">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helpers.h">
