@@ -44,9 +44,6 @@ int main(int argc, char** argv) {
 
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Mandelbrot zoom", nullptr, nullptr);
 
-	// Set window aspect ratio
-	//glfwSetWindowAspectRatio(window, WIDTH, HEIGHT);
-
 	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window\n";
 		glfwTerminate();
