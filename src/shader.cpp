@@ -30,23 +30,27 @@ const std::string Shader::readFileToString(const char* path) {
 
 void Shader::loadShader(const char* shaderPath, const GLenum& shaderType, GLuint& shader) {
 	// Read the shader source as std::string and convert it to GLchar*
+	
 	const std::string& tempSource = readFileToString(shaderPath);  // lvalue reference to the const string returned to extend lifetime of the string
 	const GLchar* shaderSource = (GLchar*)(tempSource.c_str());
 
 	// Create a shader object
+	
 	shader = glCreateShader(shaderType);
 
 	// Attach the shader source to the shader object and compile
+	
 	glShaderSource(shader, 1, &shaderSource, nullptr);
 	glCompileShader(shader);
 
 	// Verify if compilation was successfull
+	
 	GLint success;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		GLchar infoLog[512];
 		glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << '\n';
+		std::cout << "ERROR:SHADER_COMPILATION_FAILED\n" << infoLog << '\n';
 	}
 }
 
@@ -77,12 +81,13 @@ Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath) {
 	glDeleteShader(fragmentShader);
 
 	// Check for linking errors
+	
 	GLint success;
 	glGetProgramiv(*ID, GL_LINK_STATUS, &success);
 	if (!success) {
 		GLchar infoLog[512];
 		glGetProgramInfoLog(*ID, 512, nullptr, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << '\n';
+		std::cout << "ERROR:SHADER_PROGRAM_LINKING_FAILED\n" << infoLog << '\n';
 	}
 }
 
@@ -110,7 +115,8 @@ void Shader::bindValues(const GLuint& width, const GLuint& height, const GLdoubl
 	
 	this->use();
 	
-	// Pass window resolution, time, offset and zoom to the shader
+	// Pass window resolution, offset, zoom and max iterations count to the shader program
+	
 	glUniform2ui(glGetUniformLocation(*this->ID, "windowResolution"), width, height);
 	glUniform2d(glGetUniformLocation(*this->ID, "off"), x, y);
 	glUniform1d(glGetUniformLocation(*this->ID, "zoom"), zoom);
