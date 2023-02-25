@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
 		getMouseCoordinates(window, xCurrentPos, yCurrentPos);
 
 		// Update titlebar information
-		glfwSetWindowTitle(window, std::format("Mandelbrot zoom | Mouse location: x={} y={} | Zoom={} | Iteration count={}", (double)xCurrentPos, (double)yCurrentPos, zoom, maxIterations).c_str());
+		glfwSetWindowTitle(window, std::format("Mandelbrot zoom | Mouse location: x={} y={} | Zoom={} | Iteration count={}", xCurrentPos, yCurrentPos, zoom, maxIterations).c_str());
 
 		if (isPanning) {
 			// Change the offset position according to the mouse movement
