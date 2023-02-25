@@ -23,7 +23,7 @@ const std::string Shader::readFileToString(const char* path) {
 	catch (std::ifstream::failure err) {
 		
 		std::cout << "ERROR:SHADER_SOURCE_COULD_NOT_BE_READ\n";
-	
+	    return {};
 	}
 }
 
