@@ -39,6 +39,7 @@ int main(int argc, char** argv) {
 #ifdef __APPLE_
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create a window
 
@@ -47,7 +48,7 @@ int main(int argc, char** argv) {
 	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window\n";
 		glfwTerminate();
-		return false;
+		return -1;
 	}
 
 	glfwMakeContextCurrent(window);
@@ -135,14 +136,14 @@ int main(int argc, char** argv) {
 
 		// Pass window width and height to the shader
 		glfwGetFramebufferSize(window, &currentWidth, &currentHeight);
-		shaderProgram.bindValues(currentWidth, currentHeight, off.x , off.y, zoom, maxIterations);
+        shaderProgram.setValues(currentWidth, currentHeight, off.x, off.y, zoom, maxIterations);
 
 		// Get current cursor position
 		double xCurrentPos, yCurrentPos;
 		getMouseCoordinates(window, xCurrentPos, yCurrentPos);
 
 		// Update titlebar information
-		glfwSetWindowTitle(window, std::format("Mandelbrot zoom | Mouse location: x={} y={} | Zoom={} | Iteration count={}", (double)xCurrentPos, (double)yCurrentPos, zoom, maxIterations).c_str());
+		glfwSetWindowTitle(window, std::format("Mandelbrot zoom | Mouse location: x={} y={} | Zoom={} | Iteration count={}", xCurrentPos, yCurrentPos, zoom, maxIterations).c_str());
 
 		if (isPanning) {
 			// Change the offset position according to the mouse movement
@@ -160,7 +161,7 @@ int main(int argc, char** argv) {
 		isPanning = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_RELEASE);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLuint), GL_UNSIGNED_INT, (GLvoid*) 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLuint), GL_UNSIGNED_INT, (GLvoid*) nullptr);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

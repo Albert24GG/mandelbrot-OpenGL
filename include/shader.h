@@ -10,7 +10,7 @@
 
 class Shader {
 private:
-	
+
 	GLuint* ID;
 
 	// Utility funtion that loads the shader source code and creates a shader
@@ -37,7 +37,7 @@ public:
 
 	// Bind all the CPU values to the GPU values
 
-	void bindValues(const GLuint& width, const GLuint& height, const GLdouble& x, const GLdouble& y, const GLdouble& zoom, const GLuint& maxIterations);
+	void setValues(const GLuint& width, const GLuint& height, const GLdouble& x, const GLdouble& y, const GLdouble& zoom, const GLuint& maxIterations);
 
 	// Activate the shader program;
 	

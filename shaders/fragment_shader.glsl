@@ -14,7 +14,7 @@ int iterateMandelbrot(dvec2 coords){
 	dvec2 z1 = dvec2(0);
 	dvec2 z2 = dvec2(0);
 	int iteration = 0;
-	while(z2.x + z2.y <= 4 && iteration < maxIterations){
+	while(dot(z1, z1) <= 4 && iteration < maxIterations){
 		z1.y = 2 * z1.x * z1.y + coords.y;
 		z1.x = z2.x - z2.y + coords.x;
 		z2 = z1 * z1;

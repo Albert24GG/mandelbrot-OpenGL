@@ -23,7 +23,7 @@ const std::string Shader::readFileToString(const char* path) {
 	catch (std::ifstream::failure err) {
 		
 		std::cout << "ERROR:SHADER_SOURCE_COULD_NOT_BE_READ\n";
-	
+	    return {};
 	}
 }
 
@@ -110,7 +110,7 @@ GLuint Shader::getID() {
 	return *this->ID;
 }
 
-void Shader::bindValues(const GLuint& width, const GLuint& height, const GLdouble& x, const GLdouble& y, const GLdouble& zoom, const GLuint& maxIterations) {
+void Shader::setValues(const GLuint& width, const GLuint& height, const GLdouble& x, const GLdouble& y, const GLdouble& zoom, const GLuint& maxIterations) {
 	// Ensure that the correct shader program is in use
 	
 	this->use();
