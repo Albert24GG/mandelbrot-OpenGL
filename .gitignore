@@ -7,3 +7,4 @@ glad.c
 *vcxproj*
 
 thirdparty/
+build/
