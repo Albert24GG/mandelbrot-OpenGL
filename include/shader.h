@@ -10,7 +10,7 @@
 
 class Shader {
 private:
-	
+
 	GLuint* ID;
 
 	// Utility funtion that loads the shader source code and creates a shader
