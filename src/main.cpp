@@ -39,6 +39,7 @@ int main(int argc, char** argv) {
 #ifdef __APPLE_
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create a window
 
