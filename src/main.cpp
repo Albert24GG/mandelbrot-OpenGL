@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window\n";
 		glfwTerminate();
-		return false;
+		return -1;
 	}
 
 	glfwMakeContextCurrent(window);
