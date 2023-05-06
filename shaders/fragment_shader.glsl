@@ -6,7 +6,7 @@ in vec4 gl_FragCoord;
 uniform uvec2 windowResolution;
 uniform dvec2 off;
 uniform double zoom;
-uniform unsigned int maxIterations;
+uniform uint maxIterations;
 
 
 // dvec2(x, y) are the coordinates -> x + y * i is the complex representation 
