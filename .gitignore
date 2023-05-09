@@ -6,5 +6,4 @@ glad.c
 *.sln
 *vcxproj*
 
-thirdparty/
 build/
