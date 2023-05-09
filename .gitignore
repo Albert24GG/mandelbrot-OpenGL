@@ -2,7 +2,6 @@
 x64/
 x84/
 
-glad.c
 *.sln
 *vcxproj*
 
